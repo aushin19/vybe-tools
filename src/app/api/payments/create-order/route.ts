@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { createOrder } from '@/lib/razorpay';
 
-// export const runtime = 'edge'; // Removed for Node.js runtime
+export const runtime = 'edge'; // Re-added for Cloudflare Pages requirement
 
 export async function POST(request: NextRequest) {
   try {
