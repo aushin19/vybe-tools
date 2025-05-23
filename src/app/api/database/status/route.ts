@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { runDatabaseDiagnostics } from '@/lib/supabase/debug';
 
+export const runtime = 'edge';
+
 export async function GET() {
   try {
     // Get Supabase server client

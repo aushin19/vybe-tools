@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server';
 import { getRazorpayInstance } from '@/lib/razorpay';
 import { type UnsafeUnwrappedCookies } from 'next/headers';
 
+export const runtime = 'edge';
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ orderId: string }> }
