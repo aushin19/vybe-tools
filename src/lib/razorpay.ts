@@ -19,6 +19,11 @@ interface VerifyPaymentParams {
   razorpaySignature: string;
 }
 
+interface VerifyPaymentResult {
+  success: boolean;
+  error?: string;
+}
+
 // Initialize Razorpay instance
 export const getRazorpayInstance = () => {
   const key_id = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
