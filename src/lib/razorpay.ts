@@ -4,7 +4,7 @@
 import Razorpay from 'razorpay';
 import { createClient } from '@/lib/supabase/server';
 import { SubscriptionPlan } from '@/types/subscription';
-import crypto from 'crypto';
+import crypto from 'crypto'; // Re-added Node.js crypto
 
 interface CreateOrderParams {
   amount: number;
@@ -57,13 +57,46 @@ export const createOrder = async ({ amount, currency, receipt, notes }: CreateOr
   }
 };
 
+// Helper function to convert ArrayBuffer to hex string (can be moved to a shared util if used elsewhere)
+function bufferToHex(buffer: ArrayBuffer): string {
+  return Array.from(new Uint8Array(buffer))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+// Helper function for HMAC SHA256 using Web Crypto API
+async function createHmacSha256(secret: string, data: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const encodedKey = encoder.encode(secret);
+  const encodedData = encoder.encode(data);
+
+  const cryptoKey = await globalThis.crypto.subtle.importKey(
+    'raw',
+    encodedKey,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+
+  const signatureBuffer = await globalThis.crypto.subtle.sign(
+    'HMAC',
+    cryptoKey,
+    encodedData
+  );
+
+  return bufferToHex(signatureBuffer);
+}
+
 // Verify Razorpay payment
-export const verifyPayment = ({ razorpayOrderId, razorpayPaymentId, razorpaySignature }: VerifyPaymentParams) => {
+export const verifyPayment = (params: VerifyPaymentParams): VerifyPaymentResult => {
+  const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = params;
   try {
     const key_secret = process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET;
     
     if (!key_secret) {
-      throw new Error('Razorpay key_secret is not configured');
+      console.error('Razorpay key_secret is not configured');
+      // It's better to throw an error or return a more specific error type
+      return { success: false, error: 'Razorpay key_secret is not configured' };
     }
     
     // Create a signature using HMAC SHA256
@@ -76,12 +109,16 @@ export const verifyPayment = ({ razorpayOrderId, razorpayPaymentId, razorpaySign
     // Compare the generated signature with the one sent by Razorpay
     const isSignatureValid = expectedSignature === razorpaySignature;
     
-    return { success: isSignatureValid };
+    if (!isSignatureValid) {
+        return { success: false, error: 'Invalid payment signature' };
+    }
+    return { success: true };
+
   } catch (error) {
     console.error('Payment verification failed:', error);
     return { 
       success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
+      error: error instanceof Error ? error.message : 'Unknown error occurred during payment verification'
     };
   }
 };

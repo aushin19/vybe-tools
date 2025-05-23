@@ -1,8 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import crypto from 'crypto';
 
 export const runtime = 'edge';
+
+// Helper function to convert ArrayBuffer to hex string
+function bufferToHex(buffer: ArrayBuffer): string {
+  return Array.from(new Uint8Array(buffer))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+// Helper function for HMAC SHA256 using Web Crypto API
+async function createHmacSha256(secret: string, data: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const encodedKey = encoder.encode(secret);
+  const encodedData = encoder.encode(data);
+
+  const cryptoKey = await globalThis.crypto.subtle.importKey(
+    'raw',
+    encodedKey,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false, // exportable
+    ['sign']
+  );
+
+  const signatureBuffer = await globalThis.crypto.subtle.sign(
+    'HMAC',
+    cryptoKey,
+    encodedData
+  );
+
+  return bufferToHex(signatureBuffer);
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,10 +59,7 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const expectedSignature = crypto
-      .createHmac('sha256', secret)
-      .update(payload)
-      .digest('hex');
+    const expectedSignature = await createHmacSha256(secret, payload);
     
     if (expectedSignature !== webhookSignature) {
       return NextResponse.json(

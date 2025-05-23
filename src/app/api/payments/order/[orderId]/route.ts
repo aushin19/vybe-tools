@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getRazorpayInstance } from '@/lib/razorpay';
 import { type UnsafeUnwrappedCookies } from 'next/headers';
 
-export const runtime = 'edge';
+// export const runtime = 'edge'; // Removed for Node.js runtime
 
 export async function GET(
   request: NextRequest,
