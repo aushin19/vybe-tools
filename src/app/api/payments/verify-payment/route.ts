@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Verify the payment signature
-    const verificationResult = verifyPayment({
+    const verificationResult = await verifyPayment({
       razorpayOrderId,
       razorpayPaymentId,
       razorpaySignature,

@@ -1,10 +1,9 @@
 /**
- * Razorpay Integration Utility
+ * Razorpay Integration Utility for Edge Runtime
  */
-import Razorpay from 'razorpay';
+import type Razorpay from 'razorpay';
 import { createClient } from '@/lib/supabase/server';
 import { SubscriptionPlan } from '@/types/subscription';
-import crypto from 'crypto'; // Re-added Node.js crypto
 
 interface CreateOrderParams {
   amount: number;
@@ -24,6 +23,60 @@ interface VerifyPaymentResult {
   error?: string;
 }
 
+// Edge-compatible fetch implementation for Razorpay API
+class EdgeRazorpay {
+  private key_id: string;
+  private key_secret: string;
+  private baseUrl = 'https://api.razorpay.com/v1';
+
+  constructor({ key_id, key_secret }: { key_id: string; key_secret: string }) {
+    this.key_id = key_id;
+    this.key_secret = key_secret;
+  }
+
+  // Helper to make authenticated requests to Razorpay API
+  private async makeRequest(path: string, method: string = 'GET', data?: any) {
+    const url = `${this.baseUrl}${path}`;
+    const auth = btoa(`${this.key_id}:${this.key_secret}`);
+
+    const options: RequestInit = {
+      method,
+      headers: {
+        'Authorization': `Basic ${auth}`,
+        'Content-Type': 'application/json',
+      }
+    };
+
+    if (data && (method === 'POST' || method === 'PUT')) {
+      options.body = JSON.stringify(data);
+    }
+
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Razorpay API error: ${response.status} ${errorText}`);
+    }
+
+    return response.json();
+  }
+
+  // Razorpay API methods
+  orders = {
+    create: async (data: any) => {
+      return this.makeRequest('/orders', 'POST', data);
+    },
+    fetch: async (orderId: string) => {
+      return this.makeRequest(`/orders/${orderId}`);
+    }
+  };
+  
+  payments = {
+    fetch: async (paymentId: string) => {
+      return this.makeRequest(`/payments/${paymentId}`);
+    }
+  };
+}
+
 // Initialize Razorpay instance
 export const getRazorpayInstance = () => {
   const key_id = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
@@ -33,7 +86,7 @@ export const getRazorpayInstance = () => {
     throw new Error('Razorpay credentials are not configured');
   }
 
-  return new Razorpay({
+  return new EdgeRazorpay({
     key_id,
     key_secret,
   });
@@ -62,7 +115,7 @@ export const createOrder = async ({ amount, currency, receipt, notes }: CreateOr
   }
 };
 
-// Helper function to convert ArrayBuffer to hex string (can be moved to a shared util if used elsewhere)
+// Helper function to convert ArrayBuffer to hex string
 function bufferToHex(buffer: ArrayBuffer): string {
   return Array.from(new Uint8Array(buffer))
     .map((b) => b.toString(16).padStart(2, '0'))
@@ -93,23 +146,21 @@ async function createHmacSha256(secret: string, data: string): Promise<string> {
 }
 
 // Verify Razorpay payment
-export const verifyPayment = (params: VerifyPaymentParams): VerifyPaymentResult => {
+export const verifyPayment = async (params: VerifyPaymentParams): Promise<VerifyPaymentResult> => {
   const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = params;
   try {
     const key_secret = process.env.NEXT_PUBLIC_RAZORPAY_KEY_SECRET;
     
     if (!key_secret) {
       console.error('Razorpay key_secret is not configured');
-      // It's better to throw an error or return a more specific error type
       return { success: false, error: 'Razorpay key_secret is not configured' };
     }
     
     // Create a signature using HMAC SHA256
     const payload = `${razorpayOrderId}|${razorpayPaymentId}`;
-    const expectedSignature = crypto
-      .createHmac('sha256', key_secret)
-      .update(payload)
-      .digest('hex');
+    
+    // Use the Web Crypto API instead of Node.js crypto
+    const expectedSignature = await createHmacSha256(key_secret, payload);
     
     // Compare the generated signature with the one sent by Razorpay
     const isSignatureValid = expectedSignature === razorpaySignature;
