@@ -1,0 +1,289 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  
+  /* Spacing variables for consistent margins and paddings */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
+  --space-32: 8rem;     /* 128px */
+  
+  /* Section spacing */
+  --section-spacing-sm: 2rem;      /* 32px */
+  --section-spacing-md: 4rem;      /* 64px */
+  --section-spacing-lg: 6rem;      /* 96px */
+  
+  /* Container padding */
+  --container-padding-x: 1.5rem;   /* 24px */
+  --container-padding-y: 2rem;     /* 32px */
+}
+
+/* Dark theme only as specified in the planning document */
+:root {
+  --radius: 0.5rem;
+  --background: #121212;
+  --foreground: #ffffff;
+  --card: #1e1e1e;
+  --card-foreground: #ffffff;
+  --popover: #1e1e1e;
+  --popover-foreground: #ffffff;
+  --primary: #00c573;
+  --primary-foreground: #ffffff;
+  --secondary: #1e1e1e;
+  --secondary-foreground: #ffffff;
+  --muted: #1e1e1e;
+  --muted-foreground: #a1a1aa;
+  --accent: #00c573;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --border: #1e1e1e;
+  --input: #1e1e1e;
+  --ring: #00c573;
+  --chart-1: #00c573;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #a1a1aa;
+  --sidebar: #121212;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #00c573;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1e1e1e;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #1e1e1e;
+  --sidebar-ring: #00c573;
+}
+
+/* Keep the dark class for compatibility with shadcn components */
+.dark {
+  --background: #121212;
+  --foreground: #ffffff;
+  --card: #1e1e1e;
+  --card-foreground: #ffffff;
+  --popover: #1e1e1e;
+  --popover-foreground: #ffffff;
+  --primary: #00c573;
+  --primary-foreground: #ffffff;
+  --secondary: #1e1e1e;
+  --secondary-foreground: #ffffff;
+  --muted: #1e1e1e;
+  --muted-foreground: #a1a1aa;
+  --accent: #00c573;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --border: #1e1e1e;
+  --input: #1e1e1e;
+  --ring: #00c573;
+  --chart-1: #00c573;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #a1a1aa;
+  --sidebar: #121212;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #00c573;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1e1e1e;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #1e1e1e;
+  --sidebar-ring: #00c573;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  :root {
+    --gradient-color: #8350e8;
+    --sparkles-color: #8350e8;
+  }
+
+  .dark {
+    --gradient-color: #8350e8;
+    --sparkles-color: #ffffff;
+  }
+}
+
+/* Container classes */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding-x);
+  padding-right: var(--container-padding-x);
+  max-width: 1280px;
+}
+
+.container-sm {
+  max-width: 640px;
+}
+
+.container-md {
+  max-width: 768px;
+}
+
+.container-lg {
+  max-width: 1024px;
+}
+
+.container-xl {
+  max-width: 1280px;
+}
+
+/* Section spacing */
+.section {
+  padding-top: var(--section-spacing-md);
+  padding-bottom: var(--section-spacing-md);
+}
+
+.section-sm {
+  padding-top: var(--section-spacing-sm);
+  padding-bottom: var(--section-spacing-sm);
+}
+
+.section-lg {
+  padding-top: var(--section-spacing-lg);
+  padding-bottom: var(--section-spacing-lg);
+}
+
+/* Spacing utility classes */
+.spacing-stack-xs > * + * {
+  margin-top: var(--space-2);
+}
+
+.spacing-stack-sm > * + * {
+  margin-top: var(--space-4);
+}
+
+.spacing-stack-md > * + * {
+  margin-top: var(--space-6);
+}
+
+.spacing-stack-lg > * + * {
+  margin-top: var(--space-8);
+}
+
+.spacing-stack-xl > * + * {
+  margin-top: var(--space-12);
+}
+
+/* Gap classes for flexbox and grid */
+.gap-xs {
+  gap: var(--space-2);
+}
+
+.gap-sm {
+  gap: var(--space-4);
+}
+
+.gap-md {
+  gap: var(--space-6);
+}
+
+.gap-lg {
+  gap: var(--space-8);
+}
+
+.gap-xl {
+  gap: var(--space-12);
+}
+
+/* Card paddings */
+.card-padding-sm {
+  padding: var(--space-4);
+}
+
+.card-padding-md {
+  padding: var(--space-6);
+}
+
+.card-padding-lg {
+  padding: var(--space-8);
+}
+
+/* Typography spacing */
+.text-spacing h1, .text-spacing h2, .text-spacing h3, .text-spacing h4, .text-spacing h5, .text-spacing h6 {
+  margin-bottom: var(--space-4);
+}
+
+.text-spacing p {
+  margin-bottom: var(--space-4);
+}
+
+.text-spacing ul, .text-spacing ol {
+  margin-bottom: var(--space-4);
+  padding-left: var(--space-6);
+}
+
+/* Form element spacing */
+.form-spacing > * + * {
+  margin-top: var(--space-5);
+}
+
+.form-spacing label {
+  margin-bottom: var(--space-1);
+  display: block;
+}
+
+.form-spacing input, .form-spacing select, .form-spacing textarea {
+  margin-bottom: var(--space-4);
+}
+
+/* Button spacing */
+.button-group {
+  display: flex;
+  gap: var(--space-3);
+}
