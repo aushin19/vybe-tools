@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { CTAButton } from '@/components/ui/cta-button';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -97,13 +98,13 @@ export default function Home() {
             className="flex flex-col sm:flex-row justify-center gap-4"
           >
             {isLoggedIn ? (
-              <Button size="lg" className="px-8 rounded-lg" asChild>
-                <Link href="/dashboard">Go to Dashboard</Link>
-              </Button>
+              <CTAButton href="/dashboard" animate>
+                Go to Dashboard
+              </CTAButton>
             ) : (
-            <Button size="lg" className="px-8 rounded-lg" asChild>
-              <Link href="/pricing">Get Started</Link>
-            </Button>
+            <CTAButton href="/pricing" animate>
+              Get Started
+            </CTAButton>
             )}
             <Button size="lg" variant="outline" className="rounded-lg" onClick={(e) => handleScroll(e as any, 'features')}>
               Explore Features
@@ -391,12 +392,9 @@ export default function Home() {
             Join thousands of businesses that trust Nox to power their growth. Get started today with a free trial.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button size="lg" className="px-8 rounded-lg" asChild>
-              <Link href="/pricing">Start Free Trial</Link>
-            </Button>
-            <Button size="lg" variant="outline" className="rounded-lg" asChild>
-              <Link href="/pricing">View Pricing</Link>
-            </Button>
+            <CTAButton href="/pricing" animate>
+              View Pricing
+            </CTAButton>
           </div>
         </div>
       </section>
