@@ -72,32 +72,81 @@ export default function BillingPage() {
 
       setUser(userData.user);
 
-      // Get active subscription
+      // Get active subscription with complete plan details including region
       const { data: subscriptionData } = await supabase
         .from('subscriptions')
-        .select('*, subscription_plans(*)')
+        .select(`
+          *,
+          subscription_plans!inner(
+            *
+          )
+        `)
         .eq('user_id', userData.user.id)
         .order('created_at', { ascending: false })
         .limit(1)
         .single();
 
       if (subscriptionData) {
+        // Set the complete subscription data
         setSubscription(subscriptionData);
-        setPlan(subscriptionData.subscription_plans);
         
-        // Set interval directly from the plan data instead of guessing based on price
-        if (subscriptionData.subscription_plans?.interval) {
-          // Use the interval directly from the plan
-          setInterval(subscriptionData.subscription_plans.interval as SubscriptionInterval);
-        } else {
-          // Fallback to determining interval based on price (only as a backup)
-          if (subscriptionData.subscription_plans?.price < 1000) {
-            setInterval('weekly');
-          } else if (subscriptionData.subscription_plans?.price < 10000) {
-            setInterval('monthly');
+        // Ensure we have the full plan data
+        const planData = subscriptionData.subscription_plans;
+        
+        // Set interval directly from the plan data
+        setInterval(planData.interval as SubscriptionInterval);
+        
+        // First get the latest payment for this subscription to determine currency
+        const { data: latestPayment } = await supabase
+          .from('payments')
+          .select('*')
+          .eq('subscription_id', subscriptionData.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+        
+        if (latestPayment) {
+          // Use payment currency as the source of truth for plan region
+          const planCurrency = latestPayment.currency || 'INR';
+          
+          // For USD plans, check if we need to use a different price
+          if (planCurrency === 'USD') {
+            // Get the specific USD price for this plan from subscription_plans table
+            const { data: usdPlanData } = await supabase
+              .from('subscription_plans')
+              .select('*')
+              .eq('name', planData.name)
+              .eq('interval', planData.interval)
+              .eq('active', true)
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .single();
+            
+            if (usdPlanData && usdPlanData.price_usd) {
+              // Use the USD-specific price
+              setPlan({
+                ...planData,
+                currency: 'USD',
+                price: usdPlanData.price_usd
+              });
+            } else {
+              // If no USD-specific plan price found, use payment amount directly
+              setPlan({
+                ...planData,
+                currency: 'USD',
+                price: latestPayment.amount
+              });
+            }
           } else {
-            setInterval('yearly');
+            // For INR plans, use regular price
+            setPlan({
+              ...planData,
+              currency: planCurrency
+            });
           }
+        } else {
+          // Fallback to plan data only if no payment found
+          setPlan(planData);
         }
       }
 
@@ -278,9 +327,16 @@ export default function BillingPage() {
                         </div>
                         <div>
                           <h3 className="text-lg font-medium">{plan?.name || 'Free Plan'}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {plan?.price ? formatPrice(plan.price) : '₹0'} / {interval}
-                          </p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm text-muted-foreground">
+                              {formatPrice(plan?.price, plan?.currency || 'INR')} / {interval}
+                            </p>
+                            {plan?.currency && (
+                              <Badge variant="outline" className={plan.currency === 'INR' ? 'bg-blue-500/10 text-blue-300' : 'bg-green-500/10 text-green-300'}>
+                                {plan.currency === 'INR' ? 'India' : 'International'}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -413,7 +469,7 @@ export default function BillingPage() {
                             <span>{format(parseISO(payment.created_at), 'MMM d, yyyy')}</span>
                           </div>
                           <div>
-                            {payment.amount ? formatPrice(payment.amount) : '₹0'}
+                            {formatPrice(payment.amount, payment.currency || 'INR')}
                           </div>
                         </div>
                       </div>

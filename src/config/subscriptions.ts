@@ -111,9 +111,41 @@ export const PRICING_TIERS: PricingTier[] = [
 ];
 
 // Helper to convert raw amount (in paise/cents) to display format
-export const formatPrice = (amount: number, currency = '₹'): string => {
-  const amountInRupees = amount / 100;
-  return `${currency}${amountInRupees.toLocaleString('en-IN')}`;
+export const formatPrice = (amount: number | null | undefined, currency = 'INR'): string => {
+  // Map currency codes to their symbols
+  const currencySymbols: Record<string, string> = {
+    'INR': '₹',
+    'USD': '$',
+    'EUR': '€',
+    'GBP': '£',
+    // Add more currencies as needed
+  };
+
+  if (amount === null || amount === undefined) {
+    // Return a default price with the correct currency symbol
+    const symbol = currencySymbols[currency] || currency;
+    return `${symbol}0`;
+  }
+  
+  const amountInMainUnit = amount / 100;
+  
+  // Get the symbol based on the currency code, default to the code itself if not found
+  const symbol = currencySymbols[currency] || currency;
+  
+  // Format based on the currency
+  if (currency === 'INR') {
+    return `${symbol}${amountInMainUnit.toLocaleString('en-IN')}`;
+  } else if (currency === 'USD') {
+    // Ensure we display proper USD formatting with 2 decimal places
+    // For USD, we want to show $99.00 format
+    const formattedAmount = 
+      amountInMainUnit % 1 === 0 
+        ? `${Math.floor(amountInMainUnit)}` 
+        : amountInMainUnit.toFixed(2);
+    return `${symbol}${formattedAmount}`;
+  } else {
+    return `${symbol}${amountInMainUnit.toLocaleString('en-US')}`;
+  }
 };
 
 // Get the savings percentage for yearly vs monthly plans

@@ -243,26 +243,26 @@ export default function CheckoutForm() { // Renamed component
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Base Price</span>
                     <span className="text-sm font-medium">
-                      {getCurrencySymbol()}{formatPrice(orderDetails?.amount ? calculateTotal(orderDetails.amount) : 0, orderDetails?.currency || 'INR')}
+                      {formatPrice(orderDetails?.amount ? calculateTotal(orderDetails.amount) : 0, orderDetails?.currency || 'INR')}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Taxes (18% GST)</span>
                     <span className="text-sm font-medium">
-                      {getCurrencySymbol()}{formatPrice(orderDetails?.amount ? Math.round((calculateTotal(orderDetails.amount) * 0.18)) : 0, orderDetails?.currency || 'INR')}
+                      {formatPrice(orderDetails?.amount ? Math.round((calculateTotal(orderDetails.amount) * 0.18)) : 0, orderDetails?.currency || 'INR')}
                     </span>
                   </div>
                    <div className="flex justify-between items-center">
                     <span className="text-sm text-muted-foreground">Gateway Fee (2%)</span>
                     <span className="text-sm font-medium">
-                      {getCurrencySymbol()}{formatPrice(orderDetails?.amount ? Math.round((calculateTotal(orderDetails.amount) * 0.02)) : 0, orderDetails?.currency || 'INR')}
+                      {formatPrice(orderDetails?.amount ? Math.round((calculateTotal(orderDetails.amount) * 0.02)) : 0, orderDetails?.currency || 'INR')}
                     </span>
                   </div>
                   <hr className="border-border/50" />
                   <div className="flex justify-between items-center text-lg font-semibold">
                     <span>Total Amount</span>
                     <span>
-                      {getCurrencySymbol()}{formatPrice(orderDetails?.amount || 0, orderDetails?.currency || 'INR')}
+                      {formatPrice(orderDetails?.amount || 0, orderDetails?.currency || 'INR')}
                     </span>
                   </div>
                 </div>
@@ -293,7 +293,7 @@ export default function CheckoutForm() { // Renamed component
                   ) : (
                     <ShieldCheck className="mr-2 h-5 w-5" />
                   )}
-                  {paymentProcessing ? 'Processing Payment...' : `Pay ${getCurrencySymbol()}${formatPrice(orderDetails.amount, orderDetails.currency || 'INR')} Securely`}
+                  {paymentProcessing ? 'Processing Payment...' : `Pay ${formatPrice(orderDetails.amount, orderDetails.currency || 'INR')} Securely`}
                 </Button>
               )}
             </CardContent>
