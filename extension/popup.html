@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cookie Extractor</title>
+  <style>
+    body {
+      width: 350px;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+    }
+    button {
+      padding: 8px 12px;
+      background-color: #4285F4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 5px;
+      margin-bottom: 5px;
+    }
+    button:hover {
+      background-color: #3367D6;
+    }
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+    #cookie-container {
+      margin-top: 10px;
+      max-height: 350px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+    }
+    .server-status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    .server-status.success {
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+    .server-status.error {
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+    #send-to-server-btn {
+      background-color: #28a745;
+    }
+    #send-to-server-btn:hover {
+      background-color: #218838;
+    }
+    #login-supabase-btn {
+      background-color: #3ECF8E;
+    }
+    #login-supabase-btn:hover {
+      background-color: #36b37e;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .button-container {
+      margin-top: 15px;
+      display: flex;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+    }
+    #submit-login-btn {
+      background-color: #3ECF8E;
+    }
+    #cancel-login-btn {
+      background-color: #f44336;
+    }
+    .supabase-user {
+      background-color: #f0f8ff;
+      border: 1px solid #b0c4de;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+    .user-profile {
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    .user-profile pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    #get-profile-btn {
+      background-color: #6c757d;
+      margin-top: 5px;
+    }
+    h4 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Cookie Extractor</h2>
+  <button id="extract-btn">Extract Cookies</button>
+  <div id="cookie-container">
+    <p>Click the button to extract cookies from localhost:3000</p>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html> 

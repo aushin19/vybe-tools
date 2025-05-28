@@ -40,7 +40,14 @@ export default function Dashboard() {
             .single();
           
           if (error) {
-            console.error('Error fetching subscription:', error);
+            // Fix: Check error code for "No rows returned" which is an expected case
+            if (error.code === 'PGRST116') {
+              // This is just "no subscription found" - handle gracefully
+              setSubscriptionData(null);
+            } else {
+              // Log the actual error details
+              console.error('Error fetching subscription:', error);
+            }
             return;
           }
           
@@ -51,7 +58,7 @@ export default function Dashboard() {
           });
         }
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        console.error('Error fetching dashboard data:', error instanceof Error ? error.message : error);
       } finally {
         setLoading(false);
       }
@@ -104,12 +111,12 @@ export default function Dashboard() {
             <Sparkles className="h-4 w-4 text-primary" />
             <span className="text-xs font-medium uppercase tracking-wider text-primary">Dashboard Overview</span>
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight mb-1 flex items-center gap-1">
+          <h1 className="text-2xl font-semibold tracking-tight mb-1 flex flex-wrap items-center gap-1">
             Welcome back, {firstName}
-            <span className="inline-block ml-2 bg-background/50 px-2 py-1 rounded-full text-sm flex items-center gap-1.5 border border-border">
+            <span className="inline-flex items-center mt-1 sm:mt-0 sm:ml-2 bg-background/50 px-2 py-1 rounded-full text-sm gap-1.5 border border-border w-auto sm:w-auto">
               {subscriptionData?.planName || 'No Active Plan'}
               {subscriptionStatus === 'active' && (
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 ml-3">
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 ml-2">
                   Active
                 </span>
               )}

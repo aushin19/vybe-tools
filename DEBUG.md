@@ -14,6 +14,7 @@ This file tracks locations of debug code that can be safely removed once the ass
 | src/app/api/payments/verify-payment/route.ts | API endpoint for verifying Razorpay payments - Signature verification is critical | Current Date |
 | src/app/api/payments/webhooks/route.ts | Webhook handler for Razorpay events - Ensure proper signature validation | Current Date |
 | src/app/checkout/page.tsx | Client-side Razorpay integration - May need adjustment based on testing | Current Date |
+| src/app/dashboard/page.tsx | Fixed subscription data fetching with proper error handling for PGRST116 (no rows) errors | Current Date |
 
 ## Razorpay Integration Notes
 
